@@ -1,0 +1,94 @@
+templateVersion: 1.0.0
+defaultVersion: 1.1.0
+documentation: https://www.getsiteinspector.com # They don't have an offical documentation.
+type: siteinspector
+name: SiteInspector
+description: Catch errors before others notice them
+labels:
+  - spelling
+  - grammatical
+services:
+  $$id:
+    name: SiteInspector
+    command: bash -c "rake db:migrate && foreman start"
+    documentation: https://github.com/siteinspector/siteinspector
+    depends_on:
+      - $$id-postgresql
+      - $$id-redis
+    image: siteinspector/siteinspector:$$core_version
+    volumes:
+      - $$id-app:/app
+    environment:
+      - DATABASE_URL=$$secret_database_url
+      - REDIS_URL=$$config_redis_url
+      - SECRET_KEY_BASE=$$secret_secret_key
+      - RAILS_LOG_TO_STDOUT=$$config_redis_log_to_stdout
+      - SIDEKIQ_CONCURRENCY=$$config_sidekiq_concurrency
+    ports:
+      - "808"
+  $$id-postgresql:
+    name: PostgreSQL
+    depends_on: []
+    image: postgres:12.2
+    volumes:
+      - $$id-postgresql-data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_USER=$$config_postgres_user
+      - POSTGRES_PASSWORD=$$secret_postgres_password
+      - POSTGRES_DB=$$config_postgres_db
+  $$id-redis:
+    name: Redis
+    depends_on: []
+    image: redis:5.0
+    volumes:
+      - $$id-redis-data:/data
+variables:
+  - id: $$config_base_url
+    name: BASE_URL
+    label: Base URL
+    defaultValue: $$generate_fqdn
+    description: ""
+  - id: $$secret_secret_key
+    name: SECRET_KEY_BASE
+    label: Secret Key Base
+    defaultValue: $$generate_hex(64)
+    description: "Honestly I don't know what it does"
+  - id: $$config_redis_log_to_stdout
+    name: RAILS_LOG_TO_STDOUT
+    label: Log redis to stdout
+    defaultValue: "true"
+    description: ""
+    showOnConfiguration: true
+  - id: $$config_sidekiq_concurrency
+    name: SIDEKIQ_CONCURRENCY
+    label: Sidekiq concurrency
+    defaultValue: 10
+    description: ""
+    showOnConfiguration: true
+  - id: $$config_postgres_user
+    name: POSTGRES_USER
+    label: PostgreSQL User
+    defaultValue: $$generate_username
+    description: ""
+  - id: $$secret_postgres_password
+    name: POSTGRES_PASSWORD
+    label: PostgreSQL Password
+    defaultValue: $$generate_password
+    description: ""
+  - id: $$config_postgres_db
+    name: POSTGRES_DB
+    label: PostgreSQL Database
+    defaultValue: $$generate_username
+    description: ""
+  - id: $$secret_database_url
+    name: DATABASE_URL
+    label: Database URL for PostgreSQL
+    defaultValue: >-
+      postgresql://$$config_postgres_user:$$secret_postgres_password@$$id-postgresql:5432/$$config_postgres_db?sslmode=disable
+    description: ""
+  - id: $$config_redis_url
+    name: REDIS_URL
+    label: Redis URL
+    defaultValue: >-
+      redis://redis:6379/0
+    description: ""
