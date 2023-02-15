@@ -1,0 +1,60 @@
+templateVersion: 1.0.0
+defaultVersion: latest # the only version available from docekr hub.
+documentation: https://docs.serpbear.com
+type: serpbear
+name: SerpBear
+description: Search Engine Position Rank Tracking App
+labels:
+  - serp
+  - seo
+services:
+  $$id:
+    name: SerpBear
+    documentation: https://github.com/towfiqi/serpbear
+    image: towfiqi/serpbear:$$core_version
+    volumes:
+      - $$id-app-data:/app/data
+    environment:
+      - USER=$$config_user
+      - PASSWORD=$$secret_password
+      - SECRET=$$secret_secret
+      - APIKEY=$$secret_api_key
+      - SESSION_DURATION=$$config_session_duration
+      - NEXT_PUBLIC_APP_URL=$$config_base_url
+    ports:
+      - "808"
+variables:
+  - id: $$config_user
+    name: USER
+    label: User
+    defaultValue: $$generate_username
+    description: "Username to login with"
+    showOnConfiguration: true
+  - id: $$config_user
+    name: PASSWORD
+    label: Password
+    defaultValue: $$generate_password
+    description: "Password to login with"
+    showOnConfiguration: true
+  - id: $$secret_secret
+    name: SECRET
+    label: Secret
+    defaultValue: $$generate_password
+    description: "Secret key to encrypt third-party api-keys and passwords"
+  - id: $$secret_api_key
+    name: APIKEY
+    label: API Key
+    defaultValue: $$generate_password
+    description: "The API you want to use to access the SerpBear API"
+    showOnConfiguration: true
+  - id: $$config_session_duration
+    name: SESSION_DURATION
+    label: Session Duration
+    defaultValue: "24"
+    description: "How long a session lasts in hours"
+    showOnConfiguration: true
+  - id: $$config_base_url
+    name: NEXT_PUBLIC_APP_URL
+    label: Base URL
+    defaultValue: $$generate_fqdn
+    description: ""
