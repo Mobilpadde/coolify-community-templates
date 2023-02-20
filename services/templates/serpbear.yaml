@@ -22,7 +22,7 @@ services:
       - SESSION_DURATION=$$config_session_duration
       - NEXT_PUBLIC_APP_URL=$$config_base_url
     ports:
-      - "808"
+      - "3000"
 variables:
   - id: $$config_user
     name: USER
